@@ -1,6 +1,6 @@
 # stm32-Mouse-to-Joystick
 
-**This is a coursework of BJTU CNSCC.131: Digital Systems [1]**
+ **!!This is a coursework of BJTU CNSCC.131: Digital Systems [1] !!**
 
 **1.Function**
 
