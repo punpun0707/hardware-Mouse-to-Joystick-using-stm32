@@ -28,51 +28,50 @@ The designing procedure mainly includes four parts, creating a suitable STM32Cub
 
 Completing all hardware connections, use STM32 STM32CubeMX to generate an HID USB\_DEVICE project. Pay special attention to manually adjust the clock settings as shown in the figure.
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.001.png)
+<div align=center><img src="Pictures/1.png"  /></div>
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.002.png)
+<div align=center><img src="Pictures/图片2.png"  />
 
-settings
+settings</div>
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.003.png)
+<div align=center><img src="Pictures/图片3.png"  />
 
-Clock Tree
+Clock Tree</div>
 
 **3.2.2 Modify HID Descriptors**
 
 The purpose of this step is to ensure that the STM32 microcontroller is correctly recognized as a PS4 controller. We need to obtain the low-level information about the PS4 hardware, which can be found at https://psdevwiki.com/ps4/DS4-USB. First, write the HID Descriptor information provided on the webpage into the `usbd\_custom\_hid\_if.c` file of the project (replacing the default description). Then, write the Data Format from the webpage into `usbd\_custom\_hid\_device.c`. After completing this, a firmware flash should result in the microcontroller being recognized as a PS4 
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.004.png)
+<div align=center><img src="Pictures/图片4.png"  />
 
-Part of HID Descriptor in usbd\_custom\_hid\_if.c
+Part of HID Descriptor in usbd\_custom\_hid\_if.c</div>
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.005.png)
+<div align=center><img src="Pictures/图片5.png"  />
 
-Part of Data Format in usbd\_custom\_hid\_device.c
+Part of Data Format in usbd\_custom\_hid\_device.c</div>
 
 **3.2.3 Receive Mouse Signals**
 
 This is the most complex part of the project. Initially, we need to send an empty packet to the CH9350 to prevent interference caused by any stale packets. Since the mouse sends discrete data, we need to set up a UART idle interrupt to handle each incoming data packet. The specific interrupt logic is written in the `<a name="_hlk184138191"></a>stm32xx\_it.c` file. This project uses DMA to receive mouse data, and we need to manually disable the half-full interrupt (DMA\_IT\_HT) in the USART, otherwise, severe lag may occur. (The likely cause is that the half-full interrupt is only suitable for double-buffered storage).
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.006.png)
+<div align=center><img src="Pictures/图片6.png"  />
 
-Sending empty packet to the CH9350 in main.c
+Sending empty packet to the CH9350 in main.c</div>
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.007.png)
+<div align=center><img src="Pictures/图片7.png"  />
+Interrupt logic in stm32xx\_it.c</div>
 
-Interrupt logic in stm32xx\_it.c
+<div align=center><img src="Pictures/图片8.png"  />
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.008.png)
-
-Disabling the half-full interrupt in usart.c
+Disabling the half-full interrupt in usart.c</div>
 
 **3.2.4 Mapping**
 
 After receiving the mouse data, we need to analyze the mouse movement speed and map it to joystick displacement (implemented in `main.c`). Since most common mice are relative mice, the position data they send represents displacement relative to the previous frame, which is essentially the speed. Therefore, there is no need to divide by time. However, we must ensure that the mapped joystick displacement stays within the range of -127 to 127 to avoid overflow. When the mouse is stationary, the joystick displacement should be set to 0. Additionally, the left and right mouse buttons are mapped to the left and right triggers of the controller.
 
-![](Aspose.Words.1f50d18f-4698-4a8a-be83-92bfa08c169a.009.png)
+<div align=center><img src="Pictures/图片9.png"  />
 
-Mapping in main.c
+Mapping in main.c</div>
 
 **4. Testing Results**
 
