@@ -2,4 +2,4 @@
 
 **this is a coursework of BJTU CNSCC.131: Digital Systems [1]**
 
-**The following contents is a report for the coursework, as well as an instruction:**
+For further instructions and explanations, see the course report I attached.
